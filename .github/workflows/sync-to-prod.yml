@@ -18,4 +18,4 @@ jobs:
           source_branch: main  # Change if your staging branch is different
           destination_repo: balaji1103/public-repo
           destination_branch: main  # Change if your production branch is different
-          github_token: ${{ secrets.PROD_REPO_TOKEN }}
+          github_token: ${{ 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 }}
