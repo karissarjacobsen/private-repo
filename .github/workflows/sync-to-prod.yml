@@ -12,7 +12,8 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Sync to Production Repo
-        uses: repo-sync/github-sync@v2
+        uses: repo-sync/repo-sync@v2
+
         with:
           source_repo: ${{ github.repository }}
           source_branch: main  # Change if your staging branch is different
