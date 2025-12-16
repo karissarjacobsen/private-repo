@@ -8,19 +8,25 @@ jobs:
   slack-notification:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Flat Payload to Slack
-        uses: distributhor/workflow-webhook@v3
-        with:
-          # Ensure this secret name matches EXACTLY what is in GitHub Settings > Secrets
-          webhook_url: ${{ secrets.WORKFLOW_URL }}
-          
-          webhook_type: "json-extended"
-          
-          # We use toJson() for the title to automatically handle quotes or special characters safely
-          data: >-
-            {
-              "repo_fullname": "${{ github.event.repository.full_name }}",
-              "pr_title": ${{ toJson(github.event.pull_request.title) }},
-              "pr_author": "${{ github.event.pull_request.user.login }}",
-              "pr_link": "${{ github.event.pull_request.html_url }}"
-            }
+      - name: Send Notification via Curl
+        env:
+          # Load data into environment variables first
+          SLACK_WEBHOOK_URL: ${{ secrets.WORKFLOW_URL }}
+          REPO: ${{ github.event.repository.full_name }}
+          TITLE: ${{ github.event.pull_request.title }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          LINK: ${{ github.event.pull_request.html_url }}
+        run: |
+          # 1. Create safe JSON using 'jq' (handles quotes/newlines automatically)
+          JSON_PAYLOAD=$(jq -n \
+            --arg repo "$REPO" \
+            --arg title "$TITLE" \
+            --arg author "$AUTHOR" \
+            --arg link "$LINK" \
+            '{repo_fullname: $repo, pr_title: $title, pr_author: $author, pr_link: $link}')
+
+          # 2. Print JSON for debugging (Sensitive data masked in logs)
+          echo "Sending payload..."
+
+          # 3. Send to Slack
+          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$SLACK_WEBHOOK_URL"
