@@ -1,0 +1,26 @@
+name: Notify Slack on PR
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  slack-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Flat Payload to Slack
+        uses: distributhor/workflow-webhook@v3
+        env:
+          # 1. Add your Slack Webhook URL here (or use a secret for security)
+          webhook_url: "https://hooks.slack.com/workflows/YOUR_WEBHOOK_ID_HERE"
+          
+          # 2. This defines the FLAT data Slack receives
+          # We extract the nested GitHub data and map it to simple keys
+          webhook_type: "json-extended"
+          data: >-
+            {
+              "repo_fullname": "${{ github.event.repository.full_name }}",
+              "pr_title": "${{ github.event.pull_request.title }}",
+              "pr_author": "${{ github.event.pull_request.user.login }}",
+              "pr_link": "${{ github.event.pull_request.html_url }}"
+            }
