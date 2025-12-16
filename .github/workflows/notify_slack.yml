@@ -11,7 +11,7 @@ jobs:
       - name: Send Flat Payload to Slack
         uses: distributhor/workflow-webhook@v3
         with:  # <--- CHANGED FROM 'env' TO 'with'
-          webhook_url: ${{ secrets.WORLFLOW_URL }}
+          webhook_url: ${{ secrets.WORKFLOW_URL }}
           webhook_type: "json-extended"
           data: >-
             {
