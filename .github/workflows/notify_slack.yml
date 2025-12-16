@@ -10,12 +10,8 @@ jobs:
     steps:
       - name: Send Flat Payload to Slack
         uses: distributhor/workflow-webhook@v3
-        env:
-          # 1. Add your Slack Webhook URL here (or use a secret for security)
-          webhook_url: ${{secrets.WORKFLOW_URL}}
-          
-          # 2. This defines the FLAT data Slack receives
-          # We extract the nested GitHub data and map it to simple keys
+        with:  # <--- CHANGED FROM 'env' TO 'with'
+          webhook_url: ${{ secrets.WORLFLOW_URL }}
           webhook_type: "json-extended"
           data: >-
             {
