@@ -10,13 +10,17 @@ jobs:
     steps:
       - name: Send Flat Payload to Slack
         uses: distributhor/workflow-webhook@v3
-        with:  # <--- CHANGED FROM 'env' TO 'with'
+        with:
+          # Ensure this secret name matches EXACTLY what is in GitHub Settings > Secrets
           webhook_url: ${{ secrets.WORKFLOW_URL }}
+          
           webhook_type: "json-extended"
+          
+          # We use toJson() for the title to automatically handle quotes or special characters safely
           data: >-
             {
               "repo_fullname": "${{ github.event.repository.full_name }}",
-              "pr_title": "${{ github.event.pull_request.title }}",
+              "pr_title": ${{ toJson(github.event.pull_request.title) }},
               "pr_author": "${{ github.event.pull_request.user.login }}",
               "pr_link": "${{ github.event.pull_request.html_url }}"
             }
